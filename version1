@@ -1,0 +1,280 @@
+import turtle,random,time
+#----------FunctionsSetup----------
+def createCoordinates():
+    global gutter,bottleEdgesquareSize,chooseMode,coordinates,startingX,startingY
+    coordinates = []
+    colorSquare.goto(startingX,startingY)
+    for i in range(round(mode[chooseMode]/2)+1):
+        temp = []
+        for j in range(4):
+            temp.append(colorSquare.pos())
+            colorSquare.sety(colorSquare.ycor()-squareSize)
+        colorSquare.goto(colorSquare.xcor()+gutter+bottleEdge*2+squareSize,startingY)
+        coordinates.append(temp)
+    colorSquare.goto(startingX,startingY-4*squareSize-gutter-bottleEdge-bottleEdgeTop)
+    for i in range(round(mode[chooseMode]/2)):
+        temp = []
+        for j in range(4):
+            temp.append(colorSquare.pos())
+            colorSquare.sety(colorSquare.ycor()-squareSize)
+        colorSquare.goto(colorSquare.xcor()+gutter+bottleEdge*2+squareSize,startingY-4*squareSize-gutter-bottleEdge-bottleEdgeTop)
+        coordinates.append(temp)
+    generateColor()
+    myWin.update()
+    return
+def generateColor():
+    global chooseMode,bottle,tempLevel
+    colorData = (random.sample(color,mode[chooseMode]-2))
+    colorLeft = [4]*(mode[chooseMode]-2)
+    bottle = []
+    for i in range(len(coordinates)):
+        temp = []
+        tempColorLeft = colorLeft.copy()
+        tempColorData = colorData.copy()
+        while True:
+            for j in range(len(coordinates[i])):
+                if colorData != [0]*(mode[chooseMode]-2):
+                    usableColor = []
+                    colorSquare.goto(coordinates[i][j])
+                    for k in colorData:
+                        if isinstance(k,str):
+                            usableColor.append(k)
+                    currColor = random.choice(usableColor)
+                    colorSquare.color(currColor)
+                    colorSquare.stamp()
+                    colorLeft[colorData.index(currColor)] -= 1
+                    temp.append(color.index(currColor))
+                    if colorLeft[colorData.index(currColor)] <= 0:
+                        colorData[colorData.index(currColor)] = 0
+                else:
+                    temp.append(-1)
+            if 
+        bottle.append(temp)
+    tempLevel = bottle.copy()
+    myWin.update()
+    return
+def clickBottle(x,y):
+    global tempBottle,tempRedo
+    chooseBottle = whichBottle(x,y)
+    if chooseBottle != -1:
+        if bottleState[chooseBottle] == 0:
+            glowSquare.goto(bottleCoordinate[chooseBottle])
+            glowSquare.stamp()
+            tempBottle.append(chooseBottle)
+            bottleState[chooseBottle] = 1
+        elif bottleState[chooseBottle] == 1:
+            glowSquare.clear()
+            bottleState[chooseBottle] = 0
+            tempBottle.remove(chooseBottle)
+        if bottleState.count(1) == 2:
+            tempRedo = bottle.copy()
+            pourWater()
+            glowSquare.clear()
+            for i in tempBottle:
+                bottleState[i] = 0
+            tempBottle = []
+        myWin.update()
+    return
+def pourWater():
+    if bottle[tempBottle[-1]].count(-1) >= 1 and bottle[tempBottle[0]] != [-1]*4:
+        for i in range(len(bottle[tempBottle[-1]])-1,-1,-1):
+            if bottle[tempBottle[-1]][i] == -1:
+                lastBlank = i
+                break
+        for i in range(len(bottle[tempBottle[0]])):
+            if bottle[tempBottle[0]][i] != -1:
+                currColor = i
+                break
+        if (bottle[tempBottle[-1]].count(-1) == 4 or bottle[tempBottle[-1]][lastBlank+1] == bottle[tempBottle[0]][currColor]) and bottle[tempBottle[0]][currColor] != -1:
+            colorSquare.goto(coordinates[tempBottle[-1]][lastBlank])
+            colorSquare.color(color[bottle[tempBottle[0]][currColor]])
+            colorSquare.stamp()
+            bottle[tempBottle[-1]][lastBlank] = bottle[tempBottle[0]][currColor]
+            colorSquare.goto(coordinates[tempBottle[0]][currColor])
+            colorSquare.color("white")
+            colorSquare.stamp()
+            bottle[tempBottle[0]][currColor] = -1
+        ifWin()
+    return
+def whichBottle(x,y):
+    global bottleLength,bottleWidth
+    for i in range(len(bottleCoordinate)):
+        leftBoundary = bottleCoordinate[i][0]-bottleWidth/2
+        rightBoundary = bottleCoordinate[i][0]+bottleWidth/2
+        topBoundary = bottleCoordinate[i][1]+bottleLength/2
+        bottomBoundary = bottleCoordinate[i][1]-bottleLength/2
+        if leftBoundary <= x <= rightBoundary and bottomBoundary <= y<= topBoundary:
+            return i
+    return -1
+def Redo(x,y):
+    global ifRedo,bottle
+    #if len(tempRedo) > 0:
+    #    if ifRedo is True:
+    #        for i in range(len(bottle)):
+    #            for j in range(len(bottle[i])):
+    #                if bottle[i][j] != tempRedo[i][j]:
+    #                    colorList[i][j].color(color[tempRedo[i][j]])
+    #        bottle = tempRedo.copy()
+    #        ifRedo = False
+    myWin.update()
+    return
+def Restart(x,y):
+    global ifRedo,ifEmpty,bottle,tempBottle,bottleState,chooseMode
+    #for i in range(len(bottle)):
+    #    for j in range(len(bottle[i])):
+    #        if bottle[i][j] != tempLevel[i][j]:
+    #            colorList[-1].color(color[tempLevel[i][j]])
+    #            colorList[-1].goto(coordinates[i][j])
+    #bottle = tempLevel.copy()
+    #tempBottle = []
+    #bottleState = mode[chooseMode]*[0]
+    #ifRedo = True
+    #ifEmpty = True
+    myWin.update()
+    return
+
+def Empty(x,y):
+    '''
+    global ifEmpty,gutter,squareSize
+    if ifEmpty is True:
+        bottleSquare.goto(bottleCoordinate[-1][0]+gutter+squareSize*1.5-2,bottleCoordinate[-1][1])
+        bottleSquare.stamp()
+        bottleCoordinate.append(bottleSquare.pos())
+        colorSquare.goto(coordinates[-1][0][0]+gutter+bottleEdge*2+squareSize,coordinates[-1][0][1])
+        temp = []
+        for i in range(4):
+            temp.append(colorSquare.pos())
+            colorSquare.sety(colorSquare.ycor()-squareSize)
+        coordinates.append(temp)
+        bottleList.append(turtle.Turtle())
+        bottleState.append(0)
+        bottle.append([-1,-1,-1,-1])
+        bottleList[-1].penup()
+        bottleList[-1].goto(bottleCoordinate[-1])
+        bottleList[-1].shape(bottleTransparent)
+        bottleList[-1].onclick(lambda x,y: clickBottle(len(bottle)-1))
+        ifEmpty = False
+    myWin.update()
+    '''
+    return
+def ifWin():
+    for i in bottle:
+        for j in i:
+            if j != i[0]:
+                return
+    colorSquare.pencolor("black")
+    colorSquare.write("You Win!")
+    return
+#----------ChooseMode----------
+mode = [5,9,13]
+chooseMode = input("Choose your mode(enter the number): (0)easy (1)hard (2)expert!")
+while True:
+    if chooseMode in ("0","1","2"):
+        break
+    print("Invalid input! Please enter a valid integer between 0 and 2.")
+    chooseMode = input("Choose your mode(enter the number): (0)easy (1)medium (2)hard!")
+chooseMode = int(chooseMode)
+#----------VariablesSetup----------
+gutter = 50
+bottleEdge = 8
+bottleEdgeTop = 18
+squareSize = 36
+ScreenSizeX = gutter*(round(mode[chooseMode]/2)+2)+bottleEdge*2*(round(mode[chooseMode]/2)+1)+squareSize*(round(mode[chooseMode]/2)+1)-2
+ScreenSizeY = gutter*3+bottleEdgeTop*2+bottleEdge*2+squareSize*8
+halfScreenX = int(ScreenSizeX/2)
+halfScreenY = int(ScreenSizeY/2)
+startingX = -1*halfScreenX+gutter+bottleEdge
+startingY = halfScreenY-gutter-bottleEdgeTop+50
+turtleSize = squareSize / 20
+bottleLength = 170
+bottleWidth = 52
+buttonGutter = (ScreenSizeX-300)/4
+ifRedo = True
+ifEmpty = True
+#----------WindowSetup-----------
+turtle.setup(ScreenSizeX,ScreenSizeY+100)
+myWin = turtle.Screen()
+myWin.title('WaterColorSort')
+myWin.tracer(0)
+#----------ImageSetup----------
+bottleImage = "C://Users//irist//Desktop//bottle.gif"
+glow = "C://Users//irist//Desktop//glow.gif"
+bottleTransparent = "C://Users//irist//Desktop//bottleTransparent.gif"
+restart = "C://Users//irist//Desktop//restart.gif"
+redo = "C://Users//irist//Desktop//redo.gif"
+empty = "C://Users//irist//Desktop//empty.gif"
+myWin.addshape(bottleImage)
+myWin.addshape(glow)
+myWin.addshape(bottleTransparent)
+myWin.addshape(restart)
+myWin.addshape(redo)
+myWin.addshape(empty)
+#----------ListSetup----------
+color = ["#ff4747","#ff9418","#fff467","#a1ef5e","#56905d","#3ee3dd","#3fa2f7","#b365bb","#ffb1d9","#988907","#85b2c7","#874f40"]
+buttonColor = ["#969fea","#e294f7","#ffc54d"]
+colorList = []
+bottleList = []
+bottleCoordinate = []
+bottleState = []
+tempBottle = []
+tempRedo = []
+tempLevel = []
+#----------TurtleCreation----------
+colorSquare = turtle.Turtle()
+colorSquare.penup()
+colorSquare.turtlesize(turtleSize)
+colorSquare.speed(0)
+colorSquare.shape("square")
+colorSquare.hideturtle()
+#----------
+bottleSquare = turtle.Turtle()
+bottleSquare.shape(bottleImage)
+bottleSquare.penup()
+bottleSquare.speed(0)
+bottleSquare.hideturtle()
+#-----------
+glowSquare = turtle.Turtle()
+glowSquare.shape(glow)
+glowSquare.penup()
+glowSquare.speed(0)
+glowSquare.hideturtle()
+#----------
+restartSquare = turtle.Turtle()
+restartSquare.shape(restart)
+restartSquare.penup()
+restartSquare.speed(0)
+restartSquare.goto(-1*halfScreenX+buttonGutter+50,-1*halfScreenY+30)
+#-----------
+redoSquare = turtle.Turtle()
+redoSquare.shape(redo)
+redoSquare.penup()
+redoSquare.speed(0)
+redoSquare.goto(-1*halfScreenX+buttonGutter*2+150,-1*halfScreenY+30)
+#-----------
+emptySquare = turtle.Turtle()
+emptySquare.shape(empty)
+emptySquare.penup()
+emptySquare.speed(0)
+emptySquare.goto(-1*halfScreenX+buttonGutter*3+250,-1*halfScreenY+30)
+#----------GameSetup----------
+bottleSquare.goto(startingX,bottleEdgeTop+3*squareSize+2+50)
+for i in range(round(mode[chooseMode]/2)+1):
+    bottleSquare.stamp()
+    bottleCoordinate.append(bottleSquare.pos())
+    bottleState.append(0)
+    bottleSquare.setx(bottleSquare.xcor()+gutter+squareSize+bottleEdge*2)
+bottleSquare.goto(startingX,bottleEdgeTop+bottleEdge-2*squareSize-gutter+4+50)
+for i in range(round(mode[chooseMode]/2)):
+    bottleSquare.stamp()
+    bottleCoordinate.append(bottleSquare.pos())
+    bottleState.append(0)
+    bottleSquare.setx(bottleSquare.xcor()+gutter+squareSize+bottleEdge*2)
+myWin.update()
+createCoordinates()
+#----------EventHandlers----------
+myWin.onclick(clickBottle)
+restartSquare.onclick(Restart)
+redoSquare.onclick(Redo)
+emptySquare.onclick(Empty)
+#----------TheLastLine----------
+myWin.mainloop()
