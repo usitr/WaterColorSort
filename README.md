@@ -1,5 +1,5 @@
 # Water Color Sort
-A recreation of the Water Color Sort puzzle game by Python using the Turtle graphics library. Created in 2024.
+A recreation of the Water Color Sort puzzle game by Python using the Turtle graphics library. Created and Finished in Feb 2024.
 
 ## Game Rules
 The goal of Water Color Sort is to sort the colored water so that each bottle contains only single color. Each bottle can hold up to four layers of water.
