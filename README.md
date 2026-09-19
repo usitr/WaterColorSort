@@ -26,7 +26,7 @@ To make a move:
 - Python standard libraries (`random`, `copy`, `pathlib`)
 
 ## How to Run
-5. Enter `0`, `1`, or `2` in the terminal to select a difficulty.
+Enter `0`, `1`, or `2` in the terminal to select a difficulty.
 
 ## Error in name of the Undo button
 My apologies of confused the meanings of redo and undo because my English wasn't very good when I started this project, only just realized it now. Despite the "redo" labl, this button functions as a one-step undo and restores the game state before the previous move.
